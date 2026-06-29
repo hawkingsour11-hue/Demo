@@ -10,10 +10,32 @@ st.write("Input environmental and soil metrics to predict drought probability.")
 # 1. Load the Model and the Scaler safely
 @st.cache_resource
 def load_artifacts():
-    model = tf.keras.models.load_model('best_drought_model.keras')
+    # 1. Rebuild the precise architectural blueprint manually
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Dense(256, activation='relu', input_shape=(15,)), # Match your exact feature count
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dropout(0.2),
+        
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dropout(0.2),
+        
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dropout(0.2),
+        
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+    
+    # 2. Seamlessly inject the saved mathematical weights into the blueprint
+    model.load_weights('best_drought_weights.weights.h5')
+    
     with open('scaler.pkl', 'rb') as f:
         scaler = pickle.load(f)
+        
     return model, scaler
+
 
 try:
     model, scaler = load_artifacts()
