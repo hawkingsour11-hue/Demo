@@ -80,13 +80,16 @@ ordered_features = [
 ]
 
 # 4. Process Inputs and Execute Model Inference
+# 5. Run Preprocessing and Prediction pipeline
 if st.button("Analyze Drought Risk", type="primary", use_container_width=True):
     raw_array = np.array([ordered_features], dtype=np.float32)
     scaled_array = scaler.transform(raw_array)
     
     with st.spinner("Processing deep learning model weights..."):
         prediction_arr = model.predict(scaled_array)
-        prediction_prob = float(prediction_arr)
+        
+        # FIX: Explicitly extract the first scalar value from the nested array matrix
+        prediction_prob = float(prediction_arr[0][0])
     
     st.subheader("Risk Assessment Result")
     if prediction_prob >= 0.70:
